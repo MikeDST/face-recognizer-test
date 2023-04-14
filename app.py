@@ -24,13 +24,13 @@ mean = [104, 177, 123]
 rgb = False
 asyncN = 0
 scale = 1.0
+
 # If config specified, try to load it as TensorFlow Object Detection API's pipeline.
 config = readTextMessage('opencv_face_detector.prototxt')
 
-
 # Load a network
 net = cv.dnn.readNet('res10_300x300_ssd_iter_140000.caffemodel', 'opencv_face_detector.prototxt', None)
-backend =0
+backend = 0
 target = 0
 net.setPreferableBackend(backend)
 net.setPreferableTarget(target)
@@ -41,8 +41,6 @@ nmsThreshold = 0.4
 st.subheader('Phát hiện khuôn mặt DNN OpenCV Streamlit')
 FRAME_WINDOW = st.image([])
 
-
-
 def postprocess(frame, outs):
     frameHeight = frame.shape[0]
     frameWidth = frame.shape[1]
@@ -52,7 +50,6 @@ def postprocess(frame, outs):
         cv.rectangle(frame, (left, top), (right, bottom), (0, 255, 0))
 
         label = '%.2f' % conf
-
 
 
         labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
@@ -245,7 +242,7 @@ processingThread.start()
 #
 # Postprocessing and rendering loop
 #
-while cv.waitKey(1) < 0:
+while True:
     try:
         # Request prediction first because they put after frames
         outs = predictionsQueue.get_nowait()
@@ -263,7 +260,7 @@ while cv.waitKey(1) < 0:
 
             label = 'Skipped frames: %d' % (framesQueue.counter - predictionsQueue.counter)
             cv.putText(frame, label, (0, 45), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
-        
+
         FRAME_WINDOW.image(frame)
     except queue.Empty:
         pass
